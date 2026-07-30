@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f1f6ff" />
+    <title>Belaku — a quiet place to talk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="noise"></div>
+    <div class="cursor-ambient" aria-hidden="true"></div>
+    <div class="cursor-motes" aria-hidden="true">
+      <i class="cursor-mote" data-x="0.12" data-y="0.26" style="--mote-x:.12;--mote-y:.26"></i>
+      <i class="cursor-mote" data-x="0.29" data-y="0.72" style="--mote-x:.29;--mote-y:.72"></i>
+      <i class="cursor-mote" data-x="0.76" data-y="0.2" style="--mote-x:.76;--mote-y:.2"></i>
+      <i class="cursor-mote" data-x="0.87" data-y="0.58" style="--mote-x:.87;--mote-y:.58"></i>
+      <i class="cursor-mote" data-x="0.58" data-y="0.84" style="--mote-x:.58;--mote-y:.84"></i>
+    </div>
+    <div class="cursor-dot" aria-hidden="true"></div>
+    <div class="cursor-ring" aria-hidden="true"></div>
+
+    <main class="screen-shell">
+      <header class="topbar">
+        <div class="brand" aria-label="Belaku">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 4.2v2.35M6.48 6.48l1.66 1.66M4.2 12h2.35M17.52 6.48l-1.66 1.66M12 17.45v2.35M7.85 15.95l-1.37 1.37M16.15 15.95l1.37 1.37M17.45 12h2.35" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="4.1" stroke="currentColor" stroke-width="1.5"/></svg>
+          </span>
+          <span class="brand-copy"><strong>Belaku</strong><small>A quiet light</small></span>
+        </div>
+        <div class="header-actions">
+          <div class="voice-settings">
+            <button class="icon-button voice-settings-toggle" id="voice-settings-toggle" type="button" aria-label="Voice settings" aria-haspopup="dialog" aria-expanded="false" title="Voice settings">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 6.5h14M5 12h14M5 17.5h14" stroke="currentColor" stroke-width="1.65" stroke-linecap="round"/><circle cx="9" cy="6.5" r="1.8" fill="var(--panel, white)" stroke="currentColor" stroke-width="1.45"/><circle cx="15" cy="12" r="1.8" fill="var(--panel, white)" stroke="currentColor" stroke-width="1.45"/><circle cx="10.5" cy="17.5" r="1.8" fill="var(--panel, white)" stroke="currentColor" stroke-width="1.45"/></svg>
+            </button>
+            <section class="voice-popover" id="voice-popover" aria-label="Voice settings" hidden>
+              <span class="voice-label">Voice</span>
+              <button class="voice-option" type="button" data-voice="deepa" aria-pressed="true"><span class="voice-radio"></span><span>Deepa <small>(Indian Female)</small></span></button>
+              <button class="voice-option" type="button" data-voice="tejas" aria-pressed="false"><span class="voice-radio"></span><span>Tejas <small>(Indian Male)</small></span></button>
+            </section>
+          </div>
+          <button class="icon-button theme-toggle" type="button" aria-label="Switch color mode" title="Switch color mode">
+            <svg class="sun-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3.25" stroke="currentColor" stroke-width="1.75"/><path d="M12 2.5v2M12 19.5v2M21.5 12h-2M4.5 12h-2M18.72 5.28l-1.42 1.42M6.7 17.3l-1.42 1.42M18.72 18.72l-1.42-1.42M6.7 6.7 5.28 5.28" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+            <svg class="moon-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.2 15.4A8.7 8.7 0 0 1 8.6 3.8 8.7 8.7 0 1 0 20.2 15.4Z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="clear-button" id="clear-chat" type="button" disabled>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 7.5h15M9.5 11v5M14.5 11v5M6.5 7.5l.65 12h9.7l.65-12M9 7.5V4.7h6v2.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Clear chat</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="chat-window" aria-label="Conversation">
+        <div class="chat-scroll" id="chat-scroll" aria-live="polite">
+          <div class="welcome" id="welcome">
+            <div class="welcome-orb"><span></span><span></span><span></span></div>
+            <p class="eyebrow">A small space for big feelings</p>
+            <h1>You don’t have to<br />hold it all alone.</h1>
+            <p class="welcome-copy">Whatever is on your mind, you can start right here. I’m here to listen — without judgment, without rushing.</p>
+            <div class="suggestions">
+              <button type="button">I need to talk about something</button>
+              <button type="button">I’m having a difficult day</button>
+              <button type="button">I don’t know what I’m feeling</button>
+            </div>
+          </div>
+          <div class="messages" id="messages"></div>
+        </div>
+      </section>
+
+      <form class="composer" id="chat-form">
+        <label class="sr-only" for="message-input">Your message</label>
+        <textarea id="message-input" rows="1" placeholder="Say what’s on your mind..." autocomplete="off"></textarea>
+        <button id="send-button" class="send-button" type="submit" aria-label="Send message" disabled>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m4 12 15-8-4 16-4.15-6.15L4 12Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m10.85 13.85 3.3-3.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+      </form>
+      <p class="privacy-note">A private moment, just for you.</p>
+
+      <aside class="developer-credit" aria-label="Developer credit" tabindex="0">
+        <div class="profile-halo" aria-hidden="true"></div>
+        <img src="assets/avinash-t.jpg" alt="Avinash T" />
+        <div class="developer-profile">
+          <span>Independent front-end developer</span>
+          <strong>Hi, I’m Avinash T.</strong>
+          <span class="project-credit">Creator of Belaku</span>
+          <p>I shape calm, human-centered interfaces — one thoughtful detail at a time.</p>
+          <div class="developer-tags" aria-label="Developer focus areas">
+            <span>Frontend</span><span>UI / UX</span><span>Creative code</span>
+          </div>
+          <nav aria-label="Avinash T's links">
+            <a href="https://www.instagram.com/yooo.avi/" target="_blank" rel="noreferrer" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.25" y="3.25" width="17.5" height="17.5" rx="5" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="4.1" stroke="currentColor" stroke-width="1.7"/><circle cx="17.55" cy="6.55" r="1" fill="currentColor"/></svg></a>
+            <a href="https://www.linkedin.com/in/avinasht1625/" target="_blank" rel="noreferrer" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.3 9.3v8.5M6.3 6.3v.05M10.5 17.8v-5.1c0-1.8 1.08-3 2.8-3 1.72 0 2.7 1.2 2.7 3v5.1M10.5 10v7.8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.6 3.6h16.8v16.8H3.6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></a>
+            <a href="https://github.com/AvinashT1625" target="_blank" rel="noreferrer" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3.3a8.7 8.7 0 0 0-2.75 16.95c.44.08.6-.18.6-.43v-1.66c-2.46.54-2.98-1.04-2.98-1.04-.4-1.03-.98-1.3-.98-1.3-.8-.55.06-.54.06-.54.88.06 1.35.9 1.35.9.78 1.35 2.06.96 2.56.74.08-.57.3-.96.55-1.18-1.96-.22-4.03-.98-4.03-4.38 0-.97.35-1.76.9-2.38-.09-.22-.39-1.13.09-2.35 0 0 .74-.24 2.4.9a8.34 8.34 0 0 1 4.36 0c1.66-1.14 2.4-.9 2.4-.9.48 1.22.18 2.13.09 2.35.56.62.9 1.4.9 2.38 0 3.4-2.08 4.15-4.04 4.37.32.28.6.82.6 1.65v2.45c0 .25.16.52.6.43A8.7 8.7 0 0 0 12 3.3Z" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/></svg></a>
+            <a href="mailto:avinasht2772@gmail.com" aria-label="Email Avinash T" title="avinasht2772@gmail.com"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.3" y="5.4" width="17.4" height="13.2" rx="2.2" stroke="currentColor" stroke-width="1.6"/><path d="m4.6 7.2 7.4 5.55 7.4-5.55" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          </nav>
+        </div>
+      </aside>
+    </main>
+
+    <script src="read-aloud.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
