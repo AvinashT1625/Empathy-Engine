@@ -1,4 +1,4 @@
-# Belaku
+# Belaku - A Quite Light
 
 Belaku uses Groq through a small local server so the API key stays out of the browser.
 
