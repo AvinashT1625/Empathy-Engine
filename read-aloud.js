@@ -151,14 +151,6 @@ class ReadAloud {
     } catch (error) {
       if (!this.isCurrent(playback)) return;
       console.warn('Kokoro Read Aloud is unavailable; using the browser voice instead.', error);
-      if (playback.audio) {
-        playback.audio.pause();
-        playback.audio.src = '';
-      }
-      if (playback.audioUrl) {
-        URL.revokeObjectURL(playback.audioUrl);
-        delete playback.audioUrl;
-      }
       this.playNative(playback, text);
     }
   }

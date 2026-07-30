@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f1f6ff" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <title>Belaku — a quiet place to talk</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -23,7 +24,7 @@
     <div class="cursor-dot" aria-hidden="true"></div>
     <div class="cursor-ring" aria-hidden="true"></div>
 
-    <main class="screen-shell">
+    <main class="screen-shell" id="app-shell" inert aria-hidden="true">
       <header class="topbar">
         <div class="brand" aria-label="Belaku">
           <span class="brand-mark" aria-hidden="true">
@@ -33,7 +34,7 @@
         </div>
         <div class="header-actions">
           <div class="voice-settings">
-            <button class="icon-button voice-settings-toggle" id="voice-settings-toggle" type="button" aria-label="Voice settings" aria-haspopup="dialog" aria-expanded="false" title="Voice settings">
+            <button class="icon-button voice-settings-toggle" id="voice-settings-toggle" type="button" aria-label="Voice settings" aria-haspopup="dialog" aria-expanded="false" data-tooltip="Voice settings">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 6.5h14M5 12h14M5 17.5h14" stroke="currentColor" stroke-width="1.65" stroke-linecap="round"/><circle cx="9" cy="6.5" r="1.8" fill="var(--panel, white)" stroke="currentColor" stroke-width="1.45"/><circle cx="15" cy="12" r="1.8" fill="var(--panel, white)" stroke="currentColor" stroke-width="1.45"/><circle cx="10.5" cy="17.5" r="1.8" fill="var(--panel, white)" stroke="currentColor" stroke-width="1.45"/></svg>
             </button>
             <section class="voice-popover" id="voice-popover" aria-label="Voice settings" hidden>
@@ -42,10 +43,6 @@
               <button class="voice-option" type="button" data-voice="tejas" aria-pressed="false"><span class="voice-radio"></span><span>Tejas <small>(Indian Male)</small></span></button>
             </section>
           </div>
-          <button class="icon-button theme-toggle" type="button" aria-label="Switch color mode" title="Switch color mode">
-            <svg class="sun-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3.25" stroke="currentColor" stroke-width="1.75"/><path d="M12 2.5v2M12 19.5v2M21.5 12h-2M4.5 12h-2M18.72 5.28l-1.42 1.42M6.7 17.3l-1.42 1.42M18.72 18.72l-1.42-1.42M6.7 6.7 5.28 5.28" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
-            <svg class="moon-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.2 15.4A8.7 8.7 0 0 1 8.6 3.8 8.7 8.7 0 1 0 20.2 15.4Z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/></svg>
-          </button>
           <button class="clear-button" id="clear-chat" type="button" disabled>
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 7.5h15M9.5 11v5M14.5 11v5M6.5 7.5l.65 12h9.7l.65-12M9 7.5V4.7h6v2.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span>Clear chat</span>
@@ -56,14 +53,16 @@
       <section class="chat-window" aria-label="Conversation">
         <div class="chat-scroll" id="chat-scroll" aria-live="polite">
           <div class="welcome" id="welcome">
-            <div class="welcome-orb"><span></span><span></span><span></span></div>
-            <p class="eyebrow">A small space for big feelings</p>
+            <div class="welcome-orb" aria-hidden="true"><span></span><span></span><span></span></div>
+            <p class="eyebrow">A quiet space for real feelings</p>
             <h1>You don’t have to<br />hold it all alone.</h1>
-            <p class="welcome-copy">Whatever is on your mind, you can start right here. I’m here to listen — without judgment, without rushing.</p>
+            <p class="welcome-copy">Whatever is on your mind, you can begin here. There’s no need to rush.</p>
             <div class="suggestions">
               <button type="button">I need to talk about something</button>
               <button type="button">I’m having a difficult day</button>
               <button type="button">I don’t know what I’m feeling</button>
+              <button type="button">I miss someone</button>
+              <button type="button">I just need to be heard</button>
             </div>
           </div>
           <div class="messages" id="messages"></div>
@@ -72,16 +71,25 @@
 
       <form class="composer" id="chat-form">
         <label class="sr-only" for="message-input">Your message</label>
+        <input id="image-input" class="sr-only" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+        <button id="attach-image" class="attach-button" type="button" aria-label="Attach a photo" data-tooltip="Attach a photo">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m8.1 12.4 5.77-5.77a3.18 3.18 0 1 1 4.5 4.5l-7.2 7.2a5.06 5.06 0 0 1-7.16-7.16l6.7-6.7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
         <textarea id="message-input" rows="1" placeholder="Say what’s on your mind..." autocomplete="off"></textarea>
         <button id="send-button" class="send-button" type="submit" aria-label="Send message" disabled>
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m4 12 15-8-4 16-4.15-6.15L4 12Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m10.85 13.85 3.3-3.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
         </button>
+        <div class="image-preview" id="image-preview" hidden>
+          <img id="image-preview-image" alt="Selected photo preview" />
+          <span id="image-preview-name"></span>
+          <button id="remove-image" type="button" aria-label="Remove attached photo" data-tooltip="Remove photo">&times;</button>
+        </div>
       </form>
       <p class="privacy-note">A private moment, just for you.</p>
 
       <aside class="developer-credit" aria-label="Developer credit" tabindex="0">
         <div class="profile-halo" aria-hidden="true"></div>
-        <img src="assets/avinash-t.jpg" alt="Avinash T" />
+        <img src="assets/avinash-t.png" alt="Avinash T" />
         <div class="developer-profile">
           <span>Independent front-end developer</span>
           <strong>Hi, I’m Avinash T.</strong>
@@ -91,14 +99,55 @@
             <span>Frontend</span><span>UI / UX</span><span>Creative code</span>
           </div>
           <nav aria-label="Avinash T's links">
-            <a href="https://www.instagram.com/yooo.avi/" target="_blank" rel="noreferrer" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.25" y="3.25" width="17.5" height="17.5" rx="5" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="4.1" stroke="currentColor" stroke-width="1.7"/><circle cx="17.55" cy="6.55" r="1" fill="currentColor"/></svg></a>
-            <a href="https://www.linkedin.com/in/avinasht1625/" target="_blank" rel="noreferrer" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.3 9.3v8.5M6.3 6.3v.05M10.5 17.8v-5.1c0-1.8 1.08-3 2.8-3 1.72 0 2.7 1.2 2.7 3v5.1M10.5 10v7.8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.6 3.6h16.8v16.8H3.6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></a>
-            <a href="https://github.com/AvinashT1625" target="_blank" rel="noreferrer" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3.3a8.7 8.7 0 0 0-2.75 16.95c.44.08.6-.18.6-.43v-1.66c-2.46.54-2.98-1.04-2.98-1.04-.4-1.03-.98-1.3-.98-1.3-.8-.55.06-.54.06-.54.88.06 1.35.9 1.35.9.78 1.35 2.06.96 2.56.74.08-.57.3-.96.55-1.18-1.96-.22-4.03-.98-4.03-4.38 0-.97.35-1.76.9-2.38-.09-.22-.39-1.13.09-2.35 0 0 .74-.24 2.4.9a8.34 8.34 0 0 1 4.36 0c1.66-1.14 2.4-.9 2.4-.9.48 1.22.18 2.13.09 2.35.56.62.9 1.4.9 2.38 0 3.4-2.08 4.15-4.04 4.37.32.28.6.82.6 1.65v2.45c0 .25.16.52.6.43A8.7 8.7 0 0 0 12 3.3Z" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/></svg></a>
-            <a href="mailto:avinasht2772@gmail.com" aria-label="Email Avinash T" title="avinasht2772@gmail.com"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.3" y="5.4" width="17.4" height="13.2" rx="2.2" stroke="currentColor" stroke-width="1.6"/><path d="m4.6 7.2 7.4 5.55 7.4-5.55" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            <a href="https://www.instagram.com/yooo.avi/" target="_blank" rel="noreferrer" aria-label="Instagram" data-tooltip="Instagram"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.25" y="3.25" width="17.5" height="17.5" rx="5" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="4.1" stroke="currentColor" stroke-width="1.7"/><circle cx="17.55" cy="6.55" r="1" fill="currentColor"/></svg></a>
+            <a href="https://www.linkedin.com/in/avinasht1625/" target="_blank" rel="noreferrer" aria-label="LinkedIn" data-tooltip="LinkedIn"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.3 9.3v8.5M6.3 6.3v.05M10.5 17.8v-5.1c0-1.8 1.08-3 2.8-3 1.72 0 2.7 1.2 2.7 3v5.1M10.5 10v7.8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.6 3.6h16.8v16.8H3.6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></a>
+            <a href="https://github.com/AvinashT1625" target="_blank" rel="noreferrer" aria-label="GitHub" data-tooltip="GitHub"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3.3a8.7 8.7 0 0 0-2.75 16.95c.44.08.6-.18.6-.43v-1.66c-2.46.54-2.98-1.04-2.98-1.04-.4-1.03-.98-1.3-.98-1.3-.8-.55.06-.54.06-.54.88.06 1.35.9 1.35.9.78 1.35 2.06.96 2.56.74.08-.57.3-.96.55-1.18-1.96-.22-4.03-.98-4.03-4.38 0-.97.35-1.76.9-2.38-.09-.22-.39-1.13.09-2.35 0 0 .74-.24 2.4.9a8.34 8.34 0 0 1 4.36 0c1.66-1.14 2.4-.9 2.4-.9.48 1.22.18 2.13.09 2.35.56.62.9 1.4.9 2.38 0 3.4-2.08 4.15-4.04 4.37.32.28.6.82.6 1.65v2.45c0 .25.16.52.6.43A8.7 8.7 0 0 0 12 3.3Z" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/></svg></a>
+            <a href="mailto:avinasht2772@gmail.com" aria-label="Email Avinash T" data-tooltip="avinasht2772@gmail.com"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.3" y="5.4" width="17.4" height="13.2" rx="2.2" stroke="currentColor" stroke-width="1.6"/><path d="m4.6 7.2 7.4 5.55 7.4-5.55" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
           </nav>
         </div>
       </aside>
     </main>
+
+    <section class="onboarding" id="onboarding" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+      <div class="onboarding-backdrop" aria-hidden="true"></div>
+      <div class="onboarding-card">
+        <div class="onboarding-progress" aria-label="Onboarding progress"><i></i><i></i><i></i><i></i></div>
+
+        <article class="onboarding-step is-active" data-onboarding-step="0">
+          <span class="onboarding-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.55"/><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.64 5.64l1.56 1.56M16.8 16.8l1.56 1.56M18.36 5.64 16.8 7.2M7.2 16.8l-1.56 1.56" stroke="currentColor" stroke-width="1.55" stroke-linecap="round"/></svg></span>
+          <p class="onboarding-kicker">Welcome to Belaku</p>
+          <h1 id="onboarding-title">A quiet light when things feel heavy.</h1>
+          <p>Belaku is a calm space to say whatâ€™s on your mind, at your own pace and without judgment.</p>
+        </article>
+
+        <article class="onboarding-step" data-onboarding-step="1" hidden>
+          <span class="onboarding-mark is-message" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5.5 5.5h13v9.3a3.7 3.7 0 0 1-3.7 3.7H10l-4.5 3v-3.5a3.7 3.7 0 0 1-2-3.3V9.2a3.7 3.7 0 0 1 2-3.7Z" stroke="currentColor" stroke-width="1.55" stroke-linejoin="round"/><path d="M8 10.2h8M8 13.5h5" stroke="currentColor" stroke-width="1.55" stroke-linecap="round"/></svg></span>
+          <p class="onboarding-kicker">Talk freely</p>
+          <h2>Bring the things you havenâ€™t known where to put.</h2>
+          <p>Loneliness, heartbreak, confusion, a difficult day, or simply a thought you need to say out loud â€” start anywhere.</p>
+        </article>
+
+        <article class="onboarding-step" data-onboarding-step="2" hidden>
+          <span class="onboarding-mark is-photo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="4.8" width="17" height="14.4" rx="3" stroke="currentColor" stroke-width="1.55"/><circle cx="9" cy="10" r="1.5" fill="currentColor"/><path d="m5.8 17 4.35-4.2 2.8 2.5 2.25-2.1 3.1 3.8" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <p class="onboarding-kicker">Share your way</p>
+          <h2>Words are enough. A photo can help tell the story too.</h2>
+          <p>Attach one photo up to 10 MB, add the context behind it, or use the speaker icon to hear a reply aloud.</p>
+        </article>
+
+        <article class="onboarding-step" data-onboarding-step="3" hidden>
+          <span class="onboarding-mark is-heart" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 20s-7.2-4.25-7.2-9.56c0-2.1 1.55-3.94 3.68-3.94 1.43 0 2.72.8 3.52 2.06.8-1.26 2.09-2.06 3.52-2.06 2.13 0 3.68 1.84 3.68 3.94C19.2 15.75 12 20 12 20Z" stroke="currentColor" stroke-width="1.55" stroke-linejoin="round"/></svg></span>
+          <p class="onboarding-kicker">A gentle reminder</p>
+          <h2>You deserve to feel heard.</h2>
+          <p>Belaku is a supportive conversation companion, not a therapist or emergency service. If youâ€™re in immediate danger, please contact local emergency help or someone you trust.</p>
+        </article>
+
+        <div class="onboarding-controls">
+          <button class="onboarding-back" id="onboarding-back" type="button" disabled>Back</button>
+          <button class="onboarding-next" id="onboarding-next" type="button">Next <span aria-hidden="true">â†’</span></button>
+        </div>
+        <p class="onboarding-credit">Designed and built by <strong>Avinash T.</strong></p>
+      </div>
+    </section>
 
     <script src="read-aloud.js"></script>
     <script src="app.js"></script>
