@@ -161,7 +161,7 @@ class ReadAloud {
     if (this.kokoroPromise) return this.kokoroPromise;
 
     this.kokoroPromise = (async () => {
-      const { KokoroTTS } = await import('./node_modules/kokoro-js/dist/kokoro.web.js');
+      const { KokoroTTS } = await import('https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/dist/kokoro.web.js');
       try {
         this.kokoro = await KokoroTTS.from_pretrained(MODEL_ID, { device: 'webgpu', dtype: 'fp32' });
       } catch (webGpuError) {

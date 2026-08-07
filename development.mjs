@@ -4,11 +4,14 @@ import path from 'node:path';
 import OpenAI from 'openai';
 
 const PORT = Number(process.env.PORT) || 3000;
-const ROOT = process.cwd();
+const ROOT = path.join(process.cwd(), 'public');
 const MAX_BODY_SIZE = 15_000_000;
 const MAX_VISION_DATA_URL_SIZE = 3_700_000;
+const RATE_LIMIT_WINDOW_MS = 3 * 60 * 1_000;
+const RATE_LIMIT_MAX_REQUESTS = 18;
 const TEXT_MODEL = process.env.GROQ_TEXT_MODEL || 'llama-3.1-8b-instant';
 const VISION_MODEL = process.env.GROQ_VISION_MODEL || 'qwen/qwen3.6-27b';
+const requestCounts = new Map();
 
 const LEGACY_PROMPT = `You are Belaku's conversation companion: a gentle, non-judgmental, highly empathetic listener.
 
@@ -84,8 +87,32 @@ const MIME_TYPES = {
 };
 
 function sendJson(response, status, payload) {
-  response.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
+  response.writeHead(status, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Cache-Control': 'no-store',
+    'X-Content-Type-Options': 'nosniff'
+  });
   response.end(JSON.stringify(payload));
+}
+
+function getClientIp(request) {
+  const forwarded = request.headers['x-forwarded-for'];
+  if (typeof forwarded === 'string' && forwarded) return forwarded.split(',')[0].trim();
+  return request.socket?.remoteAddress || 'unknown';
+}
+
+function isRateLimited(request) {
+  const now = Date.now();
+  const ip = getClientIp(request);
+  const record = requestCounts.get(ip);
+
+  if (!record || now - record.startedAt >= RATE_LIMIT_WINDOW_MS) {
+    requestCounts.set(ip, { startedAt: now, count: 1 });
+    return false;
+  }
+
+  record.count += 1;
+  return record.count > RATE_LIMIT_MAX_REQUESTS;
 }
 
 function getGroqClient() {
@@ -159,7 +186,12 @@ function needsExtendedSafetyReply(message) {
   return /suicid|kill myself|hurt myself|self[- ]?harm|end my life|want to die|can't go on/i.test(message);
 }
 
-async function handleChat(request, response) {
+export async function handleChat(request, response) {
+  if (isRateLimited(request)) {
+    sendJson(response, 429, { error: 'Please wait a moment before sending another message.' });
+    return;
+  }
+
   const client = getGroqClient();
   if (!client) {
     sendJson(response, 503, { error: 'GROQ_API_KEY is not configured on the server.' });
@@ -256,6 +288,8 @@ const server = createServer(async (request, response) => {
   response.writeHead(405, { Allow: 'GET, HEAD, POST' }).end('Method not allowed');
 });
 
-server.listen(PORT, () => {
-  console.log(`Belaku is running at http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+  server.listen(PORT, () => {
+    console.log(`Belaku is running at http://localhost:${PORT}`);
+  });
+}

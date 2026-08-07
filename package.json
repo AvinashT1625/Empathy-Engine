@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node --watch server.js",
-    "dev": "node --watch server.js"
+    "start": "node --watch development.mjs",
+    "dev": "node --watch development.mjs"
   },
   "dependencies": {
     "kokoro-js": "^1.2.1",
